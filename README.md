@@ -1,9 +1,7 @@
 # elixir 开发准备工作
 
-<a name="c9ba11ec"></a>
 # 需要安装以下程序:
 
-<a name="e8a50bf5"></a>
 # postgresql (9.0版本以上)
 
 ```bash
@@ -14,9 +12,6 @@ sudo -u postgres psql
 postgres=# create user myuser with encrypted password 'mypass';
 ```
 
-
-<br />
-<a name="asdf"></a>
 # asdf
 ```bash
 git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.7.1
@@ -24,9 +19,7 @@ git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.7.1
 echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.bashrc
 echo -e '\n. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc
 ```
-<a name="d41d8cd9"></a>
-#
-<a name="elixir"></a>
+
 # elixir
 
 erlang deps
@@ -85,7 +78,6 @@ curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 ```
 
 
-<a name="67b31f12"></a>
 # 以上程序安装完之后, 将项目的仓库 clone 到本地.(以 dashboard 为例)
 
 在 config/dev.exs 文件中, 找到
