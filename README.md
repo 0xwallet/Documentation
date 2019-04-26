@@ -36,6 +36,40 @@
 计算手续费时, 要考虑的方面有:
 
 1. inputs 数量很多, 但都是零钱, 就要考虑 input 里的的金额能否支付得起手续费.
+2. 如果有多个输出有打入同一个地址的, 除非特殊要求, 应该合并在一起.
+3. 有很多 utxo 可供选择的时候, 优先选择数额最大的, 这样产生的零钱就不会太小.
+4. 但是对于链式交易(从 a 转到 b, 再从 b 转到 c)的长度是有限制的, 如果总是选择最大额的 utxo 来花费, 可能导致很大一部分钱在交易被确认
+前, 处于不可用状态.
+
+我们可以参考一下几个 bsv 常用开源钱包的手续费计算代码:
+
+**bitsv(python)**:
+
+```py
+## 估算这笔交易的手续费, 参数有(input 个数, output 个数, 费率, input是否被压缩过, opreturn 的大小)
+def estimate_tx_fee(n_in, n_out, satoshis, compressed, op_return_size=0):
+
+    # 费率未知, 返回 0
+    if not satoshis:
+        return 0
+
+    # 估算交易体积
+    estimated_size = (
+        4 +  # version
+        n_in * (148 if compressed else 180) # inputs 总体积
+        + len(int_to_varint(n_in)) # input count 的长度
+        + n_out * 34  # excluding op_return outputs, dealt with separately
+        + len(int_to_varint(n_out)) # output count 的长度
+        + op_return_size  # grand total size of op_return outputs(s) and related field(s)
+        + 4  # time lock
+    )
+
+    estimated_fee = estimated_size * satoshis # 体积乘以费率得到估计的手续费
+
+    logging.debug('Estimated fee: {} satoshis for {} bytes'.format(estimated_fee, estimated_size))
+
+    return estimated_fee
+```
 
 # elixir 开发准备工作
 
