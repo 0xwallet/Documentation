@@ -46,7 +46,7 @@
 **bitsv(python)**:
 
 ```py
-## 估算这笔交易的手续费, 参数有(input 个数, output 个数, 费率, input是否被压缩过, opreturn 的大小)
+## 估算这笔交易的手续费, 参数有(input 个数, output 个数, 费率, 公钥是否被压缩过, opreturn 的大小)
 def estimate_tx_fee(n_in, n_out, satoshis, compressed, op_return_size=0):
 
     # 费率未知, 返回 0
@@ -70,6 +70,9 @@ def estimate_tx_fee(n_in, n_out, satoshis, compressed, op_return_size=0):
 
     return estimated_fee
 ```
+
+代入之前那笔交易的数值 1 个 input, 2 个 outputs, 公钥是压缩过的, 无 opreturn, 我们得到的体积是 226, 和实际体积完全
+相等. 可见, 是费率设置过高了.
 
 # elixir 开发准备工作
 
