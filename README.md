@@ -188,3 +188,6 @@ mix deps.get
 iex -S mix phx.server
 ```
 
+# Depoly
+
+[部署指南](./depoly.md)
