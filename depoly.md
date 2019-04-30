@@ -186,7 +186,13 @@ Here is a small list of useful commands when dealing with Docker:
 `docker rmi <image>` removes an image
 `docker-compose down --volumes` destroys the created volumes
 
-## other
+# multi-stage build
+
+使用 multi-stage build 可以有效地减小最终产生的 images 的体积. 在 Dockerfile 里, 每条指令都会产生一个新的 layer, 而你需要在进入下一个 layer 之前清理掉所有垃圾. 想编写一个非常高效的 Dockerfile, 你需要很多的 shell 操作技巧.
+
+开发环境和生产环境的 Dockerfile 很不一样, 开发环境里会包含编译所需要的所有东西, 而生产环境只需要运行你的 app. 然而, 维护两个 Dockerfile 并不是理想做法.
+
+## 命令
 
 进入iex: `docker run -it --rm elixir`
 
