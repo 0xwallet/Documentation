@@ -1,3 +1,17 @@
+# 部署流程
+
+1. 在本地安装 Docker
+
+docker 下载地址: https://hub.docker.com/editions/community/docker-ce-desktop-mac
+
+2. 构建 image
+
+3. 将 image push 到云端
+
+4. 在云端启动项目
+
+5. 配置项目的各种环境变量, 证书等.
+
 # Docker elixir
 
 elixir 官方的 docker image: https://hub.docker.com/_/elixir/
