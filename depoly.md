@@ -12,6 +12,14 @@ docker 下载地址: https://hub.docker.com/editions/community/docker-ce-desktop
 
 5. 配置项目的各种环境变量, 证书等.
 
+# Daocloud 部署
+
+daocloud 支持自动流水线部署.
+
+1. 新建项目, 选择使用 git 地址.
+
+2. 按 http://guide.daocloud.io/dcs/git-9870399.html 所示, 复制 depoly key 到项目的 github 上.
+
 # Docker elixir
 
 elixir 官方的 docker image: https://hub.docker.com/_/elixir/
