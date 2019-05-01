@@ -173,6 +173,22 @@ end
 
 完成了. 可以运行 `docker-compose build` 和 `docker-compose up` 来启动容器了.
 
+## 如何在开发时配置环境变量
+
+在本地开发的时候, 我们也可以沿用环境变量传递参数的模式, 以保证代码的一致. 这时候就需要用到
+direnv 这个管理环境变量的工具.
+
+在 https://github.com/direnv/direnv 下载安装 direnv. 安装好后, 如果你用的是 bash, 就在 `~/.bashrc` 文件中
+加入这一行: `eval "$(direnv hook bash)"` . 运行 `source ~/.bashrc` 载入配置.
+
+在本项目的根目录下, 新建文件 `.envrc`, 在里面写入所需的环境变量, 例如:
+
+```bash
+export FOO=123
+```
+
+然后运行 `direnv allow .` 即可载入本项目专属的环境变量.
+
 ## Useful Commands
 
 Here is a small list of useful commands when dealing with Docker:
