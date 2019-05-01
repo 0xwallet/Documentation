@@ -231,6 +231,37 @@ elixir 预编译包的 checksum: https://elixir-lang.org/elixir.csv 对于第三
         `pg_isready -h <IP ADDRESS>`
 
 
+## 如何传递配置信息到 docker 中的 phoenix 项目里
+
+一般我们可以通过环境变量来传递参数, 在 DaoCloud 上设置环境变量:
+
+```
+- PGUSER:
+- PGPASSWORD:
+- PGDATABASE:
+- PGHOST:
+- PGPORT:
+```
+
+然后在我们的 phoenix 应用启动时读取环境变量:
+
+```ex
+defmodule Demo.Repo do
+  use Ecto.Repo, otp_app: :demo
+
+  def init(_, config) do
+    config = config
+      |> Keyword.put(:username, System.get_env("PGUSER"))
+      |> Keyword.put(:password, System.get_env("PGPASSWORD"))
+      |> Keyword.put(:database, System.get_env("PGDATABASE"))
+      |> Keyword.put(:hostname, System.get_env("PGHOST"))
+      |> Keyword.put(:port, System.get_env("PGPORT") |> String.to_integer)
+    {:ok, config}
+  end
+end
+```
+
+
 # SSH-COPY-ID
 
 `ssh-copy-id` 是 ssh 的配套工具之一, 它提供了 passwordless 的登陆体验.
