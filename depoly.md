@@ -200,6 +200,17 @@ Here is a small list of useful commands when dealing with Docker:
 
 elixir 预编译包的 checksum: https://elixir-lang.org/elixir.csv 对于第三方提供的软件包, 都应该检查其 checksum, 确保安全.
 
+## Trouble Shooting
+
+- elixir 报错无法启动 apps.
+
+可能是由于在 dockerfile 中设置了非 root 用户, 导致权限不够, 无法写入某些文件. 在 Dockerfile 里设置 `User root` 即可.
+
+- 连接不上数据库.
+
+可能是数据库的 hostname, password 或者 port 配置错误.
+
+
 # SSH-COPY-ID
 
 `ssh-copy-id` 是 ssh 的配套工具之一, 它提供了 passwordless 的登陆体验.
