@@ -210,6 +210,26 @@ elixir 预编译包的 checksum: https://elixir-lang.org/elixir.csv 对于第三
 
 可能是数据库的 hostname, password 或者 port 配置错误.
 
+## POSTGRES docker
+
+配置端口映射:
+
+    5432:5432
+
+配置环境变量:
+
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+
+配置 VOLUMES:
+
+      pgdata:/var/lib/postgresql/data
+
+检查是否启动成功:
+
+        `pg_isready -h <IP ADDRESS>`
+
 
 # SSH-COPY-ID
 
