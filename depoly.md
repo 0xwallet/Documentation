@@ -279,6 +279,25 @@ elixir 预编译包的 checksum: https://elixir-lang.org/elixir.csv 对于第三
 我们还可以修改启动命令，和调整容器实例个数。当容器实例多于一个时，则会在主机之上创建多个容器实例，直到主机资源耗尽为止。另外再次提醒，自有集群之上多实例应用，需要用户自己完成负载均衡设置。
 
 
+## 部署复杂的多节点微服务应用
+
+在集群中, 我们需要自己实现负载均衡, 也就是流量转发.
+
+详见 [DaoCloud 的官方文档](http://guide-static.daocloud.io/dcs/%E9%83%A8%E7%BD%B2%E5%A4%8D%E6%9D%82%E7%9A%84%E5%A4%9A%E8%8A%82%E7%82%B9%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%BA%94%E7%94%A8-9153682.html).
+
+注意, DaoCloud 不支持 docker-compose v3 的语法,
+
+Docker Compose YML是由若干Service组成，每个Service都必须包括Image。其他的字段都是可选的，功能和docker run命令保持一致。
+
+### DaoCloud 不支持的功能
+Docker Compose运行在本地，而DaoCloud运行在云端。有少量的参数是暂时不支持的。
+
+因此DaoCloud暂时不支持和构建相关的参数。也不支持和本地配置文件有关的参数。包括
+
+- build
+- env_file
+- dockerfile
+- extends
 
 ## POSTGRES docker
 
