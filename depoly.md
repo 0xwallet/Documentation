@@ -223,6 +223,43 @@ Let's Encrypt 在颁发证书之前, 会发起一个 ACME 挑战请求:
 - Certbot代理程序完成后，容器将自动停止
 - 发出一个Docker Compose down命令，它将停止和关闭你的基本版本的Nginx容器
 
+对于所有Let's Encrypt renew 请求，该过程将涉及以下内容：
+
+确保已配置并启动并运行Nginx的生产版本。只要您的站点已准备好部署，该容器将通过Docker Compose启动，并将保持正常运行。
+配置将执行Docker运行命令中的 cron 任务，该命令每周或每两周执行一次 Certbot renew。
+
+下面的 docker-compose 文件的作用就是运行一个基本版本的 nginx 来获取整数:
+
+```yaml
+version: '3.1'
+
+services:
+
+  letsencrypt-nginx-container:
+    container_name: 'letsencrypt-nginx-container'
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./letsencrypt-site:/usr/share/nginx/html
+    networks:
+      - docker-network
+
+networks:
+  docker-network:
+    driver: bridge
+```
+
+它执行了以下操作:
+
+1. 将最新版本的 Nginx 从 Docker 注册点拉下来
+2. 将容器内的 80 端口对应到 host 的 80 端口, 这意味着向你的域名发来的请求会转发到 docker 容器内的 nginx 上.
+3. 将 nginx 的配置文件映射到我们下一步将要创建的配置文件的位置. 当容器启动时, 它会载入我们自定义的配置文件.
+4. 将 `/docker/letsencrypt-docker-nginx/src/letsencrypt/letsencrypt-site` 关联到容器内 Nginx 的默认位置. 在这个实例里, 其实不是很必要, 因为这个站点的唯一作用就是响应挑战请求, 但是放置一个默认 HTML 文件是一个好习惯.
+5. 创建默认的 docker 网络.
+
+
 ## Useful Commands
 
 Here is a small list of useful commands when dealing with Docker:
