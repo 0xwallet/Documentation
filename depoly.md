@@ -189,6 +189,19 @@ export FOO=123
 
 然后运行 `direnv allow .` 即可载入本项目专属的环境变量.
 
+## HTTPS
+
+CERTBOT 的 docker image https://hub.docker.com/r/certbot/certbot/dockerfile
+
+Certbot 的更新很频繁. 如果你将 Certbot 安装在你的服务器上, 每次更新的时候都需要卸载并安装新的版本, 所以, 使用 docker 容器是更好的选择. 当 Certbot 更新时, 新的 image 会自动从 Docker 注册点被 pull 下来.
+
+**使用了 docker 化地 Certbot, 获取 Let's Encrypt 证书只需要以下两步:**
+
+1. 获取证书, 只需要简单地执行一个 Docker run 脚本. 这个脚本看起来很像是你在服务器上安装 Certbot 时会用到的. Docker 会在一个容器里面执行这个脚本, 当脚本完成时, 容器会被关闭.
+
+2. 设置一个 cron 任务, 定期地执行证书更新脚本.
+
+
 ## Useful Commands
 
 Here is a small list of useful commands when dealing with Docker:
@@ -225,6 +238,10 @@ elixir 预编译包的 checksum: https://elixir-lang.org/elixir.csv 对于第三
 - 连接不上数据库.
 
 可能是数据库的 hostname, password 或者 port 配置错误.
+
+- Daocloud 流水线在发布环节失败
+
+删除应用, 重新部署.
 
 ## POSTGRES docker
 
