@@ -211,7 +211,17 @@ Let's Encrypt 在颁发证书之前, 会发起一个 ACME 挑战请求:
 - Certbot agnet 将这个 token 放在我们的域名的 endpoint 上, 就像 `http://ohhaithere.com/.well-known/acme-challenge/{token}`
 - 如果这个 token 是正确的, 那么挑战成功, Let's Encrypt 就知道这个域名是我们控制的.
 
+这个基础的 Nignix 实例只会在第一次请求证书的时候被运行. 这个基本的实例甚至不需要有一个默认页面. 只需要给 Certbot agent 写的权限, 这样就可以将 token 放在 endpoint 上.
 
+我们不能配置一个单独的 Nginx 实例, 因为在没有证书之前, Nginx 只能配置 HTTP. 一旦我们有了证书, 就可以配置 SSL/TLS. 如果60 或者 90 天后, 需要 renew 证书, 之后的 challenge 将会发送到我们生产版本的 Nginx 上, 所以我们不需要再次运行基本的 Nginx 实例.
+
+回顾一下，Let's encrypt的证书的第一个请求将涉及以下内容：
+
+- 配置仅在HTTP上运行的Nginx的基本版本，并为以下端点提供Certbot代理写入访问权限：`http://ohhaithere.com/.well-known/acme-challenge/ {token}`
+- 通过Docker Compose调整Nginx的基本容器
+- 执行一个Docker run命令，该命令将启动Certbot代理程序。 Certbot代理将执行质询请求，如果成功，请将SSL证书放在服务器上的Let's Encrypt文件夹中。
+- Certbot代理程序完成后，容器将自动停止
+- 发出一个Docker Compose down命令，它将停止和关闭你的基本版本的Nginx容器
 
 ## Useful Commands
 
