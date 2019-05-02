@@ -259,6 +259,72 @@ networks:
 4. 将 `/docker/letsencrypt-docker-nginx/src/letsencrypt/letsencrypt-site` 关联到容器内 Nginx 的默认位置. 在这个实例里, 其实不是很必要, 因为这个站点的唯一作用就是响应挑战请求, 但是放置一个默认 HTML 文件是一个好习惯.
 5. 创建默认的 docker 网络.
 
+然后是配置一下 nginx: `/docker/letsencrypt-docker-nginx/src/letsencrypt/nginx.conf`
+```
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ohhaithere.com www.ohhaithere.com;
+
+    location ~ /.well-known/acme-challenge {
+        allow all;
+        root /usr/share/nginx/html;
+    }
+
+    root /usr/share/nginx/html;
+    index index.html;
+}
+```
+
+Nginx 配置文件做了以下工作:
+
+1. 监听 80 端口, 为 URL ohhaithere.com 和 www.ohhaithere.com
+2. 给 Certbot agent 访问 `./well-known/acme-challenge` 的权限
+3. 设定默认的 root 和文件
+
+然后创建 html 文件: `/docker/letsencrypt-docker-nginx/src/letsencrypt/letsencrypt-site/index.html`
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Let's Encrypt First Time Cert Issue Site</title>
+</head>
+<body>
+    <h1>Oh, hai there!</h1>
+    <p>
+        This is the temporary site that will only be used for the very first time SSL certificates are issued by Let's Encrypt's
+        certbot.
+    </p>
+</body>
+</html>
+```
+
+在运行 certbot 之前, 确保这个临时的 nginx 启动了:
+
+```bash
+cd /docker/letsencrypt-docker-nginx/src/letsencrypt
+sudo docker-compose up -d
+```
+
+接下来运行以下命令来申请最新的证书:
+
+```bash
+sudo docker run -it --rm \
+-v /docker-volumes/etc/letsencrypt:/etc/letsencrypt \
+-v /docker-volumes/var/lib/letsencrypt:/var/lib/letsencrypt \
+-v /docker/letsencrypt-docker-nginx/src/letsencrypt/letsencrypt-site:/data/letsencrypt \
+-v "/docker-volumes/var/log/letsencrypt:/var/log/letsencrypt" \
+certbot/certbot \
+certonly --webroot \
+--register-unsafely-without-email --agree-tos \
+--webroot-path=/data/letsencrypt \
+--staging \
+-d ohhaithere.com -d www.ohhaithere.com
+```
+
+
 
 ## Useful Commands
 
