@@ -201,6 +201,17 @@ Certbot 的更新很频繁. 如果你将 Certbot 安装在你的服务器上, �
 
 2. 设置一个 cron 任务, 定期地执行证书更新脚本.
 
+在我们可以执行 Certbot 命令来获取新的证书之前, 我们需要运行一个非常基础的 Nginx 实例, 让域名可以被通过 HTTP 访问到.
+
+Let's Encrypt 在颁发证书之前, 会发起一个 ACME 挑战请求:
+
+- 我们执行一个 Certbot agnet 的命令
+- Certbot 告知 Let's Encrypt 我们需要一个 SSL/TLS 证书
+- Let's Encrypt 向 Certbot agent 发送一个独特的 token
+- Certbot agnet 将这个 token 放在我们的域名的 endpoint 上, 就像 `http://ohhaithere.com/.well-known/acme-challenge/{token}`
+- 如果这个 token 是正确的, 那么挑战成功, Let's Encrypt 就知道这个域名是我们控制的.
+
+
 
 ## Useful Commands
 
