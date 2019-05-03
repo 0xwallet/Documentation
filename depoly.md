@@ -324,6 +324,44 @@ certonly --webroot \
 -d ohhaithere.com -d www.ohhaithere.com
 ```
 
+## Certbot docker image 的使用方法
+
+在 DaoCloud 上配置应用的 yaml 文件, 如下:
+```yaml
+certbot:
+  image: index.docker.io/certbot/certbot:v0.33.1
+  command: certonly --webroot --register-unsafely-without-email --agree-tos --webroot-path=/data/letsencrypt --staging -d owaf.io -d www.owaf.io -n
+  privileged: false
+  restart: always
+  ports:
+    - '80'
+    - '443'
+  volumes:
+    - /docker-volumes/etc/letsencrypt:/etc/letsencrypt
+    - /docker-volumes/var/lib/letsencrypt:/var/lib/letsencrypt
+    - /docker/letsencrypt-docker-nginx/src/letsencrypt/letsencrypt-site:/data/letsencrypt
+    - /docker-volumes/var/log/letsencrypt:/var/log/letsencrypt
+```
+
+`--staging` 是测试获取证书的流程. `-n` 表示跳过交互操作.
+
+上面一步执行完后, 运行启动命令: `--staging certificates` 来查看证书.
+
+如果一切正常, 将看到:
+```bash
+2019-05-03 20:54:51:Found the following certs:
+2019-05-03 20:54:51:  Certificate Name: owaf.io
+2019-05-03 20:54:51:    Domains: owaf.io www.owaf.io
+2019-05-03 20:54:51:    Expiry Date: 2019-08-01 10:48:42+00:00 (INVALID: TEST_CERT)
+2019-05-03 20:54:51:    Certificate Path: /etc/letsencrypt/live/owaf.io/fullchain.pem
+2019-05-03 20:54:51:    Private Key Path: /etc/letsencrypt/live/owaf.io/privkey.pem
+2019-05-03 20:54:51:- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+2019-05-03 20:54:53:  Certificate Name: owaf.io
+2019-05-03 20:54:53:    Domains: owaf.io www.owaf.io
+2019-05-03 20:54:53:    Expiry Date: 2019-08-01 10:48:42+00:00 (INVALID: TEST_CERT)
+2019-05-03 20:54:53:    Certificate Path: /etc/letsencrypt/live/owaf.io/fullchain.pem
+2019-05-03 20:54:53:    Private Key Path: /etc/letsencrypt/live/owaf.io/privkey.pem
+```
 
 
 ## Useful Commands
