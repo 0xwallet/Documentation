@@ -485,6 +485,13 @@ internet --- dockercloud/haproxy--- |
 
 更高级的用法请查看镜像页面 HAProxy
 
+环境变量配置:
+
+- `CACERTFILE`
+    the path of a ca-cert file. This allows you to mount your ca-cert file directly from a volume instead of from envvar. If set, CA_CERT envvar will be ignored. Possible value: `/cacerts/cert0.pem`
+
+
+
 ## Useful Commands
 
 Here is a small list of useful commands when dealing with Docker:
