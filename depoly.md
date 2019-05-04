@@ -363,6 +363,86 @@ certbot:
 2019-05-03 20:54:53:    Private Key Path: /etc/letsencrypt/live/owaf.io/privkey.pem
 ```
 
+在主机上执行`sudo rm -rf /docker-volumes/` , 删除测试证书.
+
+接下来获取正式证书:
+
+```yaml
+certbot:
+  image: index.docker.io/certbot/certbot:v0.33.1
+  command: certonly --webroot --email bitcoinsv@yahoo.com --no-eff-email --agree-tos --webroot-path=/data/letsencrypt -d owaf.io -d www.owaf.io --keep-until-expiring
+  privileged: false
+  restart: always
+  ports:
+    - '80'
+    - '443'
+  volumes:
+    - /docker-volumes/etc/letsencrypt:/etc/letsencrypt
+    - /docker-volumes/var/lib/letsencrypt:/var/lib/letsencrypt
+    - /docker/letsencrypt-docker-nginx/src/letsencrypt/letsencrypt-site:/data/letsencrypt
+    - /docker-volumes/var/log/letsencrypt:/var/log/letsencrypt
+```
+
+现在我们已经
+
+接下来, 可以用 Haproxy 实现负载均衡以及 https:
+ https://blog.georgejose.com/moving-my-http-website-to-https-using-letsencrypt-haproxy-and-docker-deb56ff6be9b
+
+
+## HAProxy
+
+使用 HAProxy 智能负载均衡
+我们使用 dockercloud-haproxy 配合 DaoCloud 的应用管理来实现负载均衡。如希望使用 Nginx 查看这里。
+
+dockercloud-haproxy 对 HAProxy 进行了包装，增加了在 docker 环境下自动配置的功能
+
+部署 dockercloud-haproxy
+按照如下 compose 配置
+
+lb 服务监听机器的 80 端口，并把 docker.sock 映射到容器中，HAProxy 容器会检查 links 的服务的变化并更新负载均衡配置。
+
+在 web 中使用 VIRTUAL_HOST 配置服务的访问地址。
+
+```
+version: '2'
+services:
+  web:
+    image: daocloud.io/daocloud/dao-2048
+    environment:
+    - VIRTUAL_HOST=*owaf.io
+  lb:
+    image: daocloud.io/daocloud/dockercloud-haproxy
+    links:
+    - web
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+    - 80:80
+```
+
+启动后自动完成配置，
+
+可以在机器上执行命令 curl -H 'Host: hello.example' xxx.xxx.xxx.xxx 来测试配置，如返回 2048 的HTML内容则代表配置成功。
+
+注意这里使用 *owaf.io 来表示 VIRTUAL_HOST, 可以匹配到 `owaf.io` 和 `www.owaf.io`.
+
+在应用页面增加容器的数量，HAProxy 会自动把流量负载均衡到这些容器上。
+
+负载均衡的架构如下所示：
+```
+
+                                                           |---- container_a1
+                                    |----- service_a ----- |---- container_a2
+                                    |   (virtual host a)   |---- container_a3
+internet --- dockercloud/haproxy--- |
+                                    |                      |---- container_b1
+                                    |----- service_b ----- |---- container_b2
+                                        (virtual host b)   |---- container_b3
+
+```
+这里只介绍了简单的使用方式
+
+更高级的用法请查看镜像页面 HAProxy
 
 ## Useful Commands
 
