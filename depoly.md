@@ -391,8 +391,49 @@ certbot:
 
 ## HAProxy
 
-使用 HAProxy 智能负载均衡
-我们使用 dockercloud-haproxy 配合 DaoCloud 的应用管理来实现负载均衡。如希望使用 Nginx 查看这里。
+HAProxy, 全称是 High Availability Proxy. 是一个非常流行的负载均衡和反向代理应用. 在我们的配置中, 我们将会用它作为一个代理层, 将所有通过 HTTPS 指向我们的服务器的请求转到对应的静态文件. 我们也会将其设置成把所有 HTTP 流量转移到 HTTPS.
+
+首先在服务器上创建以下两个文件, 分别用来存放我们的网站, 和 haproxy:
+
+```
+|-- personal-website
+|-- haproxy
+```
+
+如果你已经有了一个网站应用了, 可以将其启动在 8080(或者其它) 端口. 并且先获取一下 SSL 证书, 获取证书的方法见上文.
+
+下面是 haproxy 文件的结构:
+
+```
+# HAProxy folder structure
+HAProxy
+|-- Dockerfile
+|-- haproxy.cfg
+|-- private/
+  |-- domain.com.pem # place the ssl certificate you obtained here
+```
+
+将 Dockerfile 更新成下面这样:
+
+```dockerfile
+# Dockerfile
+
+# Use the offical haproxy base image
+FROM haproxy:1.7
+
+# Copy our haproxy configuration into the docker container
+COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
+
+# Copy our ssl certificate into the docker container
+COPY private/domain.com.pem /private/domain.com.pem
+
+# HAProxy requires a user & group named haproxy in order to run
+RUN groupadd haproxy && useradd -g haproxy haproxy
+
+# HAProxy also requires /var/lib/haproxy/run/haproxy/ to be created before it's run
+RUN mkdir -p /var/lib/haproxy/run/haproxy/
+```
+
 
 dockercloud-haproxy 对 HAProxy 进行了包装，增加了在 docker 环境下自动配置的功能
 
