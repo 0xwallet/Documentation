@@ -490,6 +490,15 @@ internet --- dockercloud/haproxy--- |
 - `CACERTFILE`
     the path of a ca-cert file. This allows you to mount your ca-cert file directly from a volume instead of from envvar. If set, CA_CERT envvar will be ignored. Possible value: `/cacerts/cert0.pem`
 
+## HAProxy 配置
+
+HAProxy 的配置流程包含主要 3 种参数来源:
+
+- 来自命令行的参数, 优先级最高
+- "global" 全局参数
+- "defaults", "listen", "frontend", "backend"
+
+配置文件的格式是 keyword 启头, 后面跟着几个用空格分隔的参数.
 
 
 ## Useful Commands
