@@ -543,17 +543,19 @@ backend be-owaf
 
 ## 如何使用环境变量写入配置文件
 
-例子:
+使用 DaoCloud 的 Stack 功能部署 HAProxy, 并且传递配置文件.
 
 ```yaml
 version: "2"
 
 services:
-  nginx:
+  haproxy:
     image: library/haproxy:1.8.20
     ports:
       - 80:80
       - 443:443
+    volumes:
+      - /docker-volumes/etc/letsencrypt:/etc/letsencrypt
     environment:
       HAPROXY_CONFIG: |
         frontend fe-owaf
@@ -569,9 +571,8 @@ services:
         backend be-owaf
             # Config omitted here
             server owaf 161.117.83.227:80
-
     command:
-      mkdir -p /usr/local/etc/haproxy/ && touch /usr/local/etc/haproxy/haproxy.cfg && echo $$HAPROXY_CONFIG > /usr/local/etc/haproxy/haproxy.cfg && haproxy -f /usr/local/etc/haproxy/haproxy.cfg
+      [sh, -c, "mkdir -p /usr/local/etc/haproxy/ && touch /usr/local/etc/haproxy/haproxy.cfg && echo $$HAPROXY_CONFIG > /usr/local/etc/haproxy/haproxy.cfg && haproxy -f /usr/local/etc/haproxy/haproxy.cfg"]
 ```
 
 如果文件不存在, 可以使用 `mkdir -p ~/unexist/yes/ && touch ~/unexist/yes/lol.txt && echo "hello" > ~/unexist/yes/lol.txt` 命令, 先创建文件.
