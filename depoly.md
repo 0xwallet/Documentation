@@ -540,6 +540,21 @@ backend be-owaf
     server owaf 161.117.83.227:80
 ```
 
+## Certbot 获得的证书如何被 HAProxy 使用
+
+HAProxy 需要一个单个文件的 SSL 证书, 并且是固定的格式. 所以, 我们需要将 certbot 的 live 文件夹下的证书文件, 转换成 HAProxy 可以使用的格式.
+
+步骤如下:
+
+```bash
+sudo mkdir -p /etc/ssl/demo.scalinglaravel.com
+
+sudo cat /etc/letsencrypt/live/demo.scalinglaravel.com/fullchain.pem \
+    /etc/letsencrypt/live/demo.scalinglaravel.com/privkey.pem \
+    | sudo tee /etc/ssl/demo.scalinglaravel.com/demo.scalinglaravel.com.pem
+```
+
+我们把 fullchain 和 privkey 两个文件结合在了一起, 顺序很关键.
 
 ## 如何使用环境变量写入配置文件
 
@@ -563,7 +578,7 @@ services:
             bind *:80
 
             # This is our new config that listens on port 443 for SSL connections
-            bind *:443 ssl crt /etc/letsencrypt/live/owaf.io/fullchain.pem
+            bind *:443 ssl crt /etc/letsencrypt/live/owaf.io/owaf.io.pem
 
             default_backend be-owaf
 
@@ -573,7 +588,7 @@ services:
             # Config omitted here
             server owaf 161.117.83.227:80
     command:
-      [sh, -c, "mkdir -p /usr/local/etc/haproxy/ && touch /usr/local/etc/haproxy/haproxy.cfg && echo $$HAPROXY_CONFIG > /usr/local/etc/haproxy/haproxy.cfg && cat /usr/local/etc/haproxy/haproxy.cfg && haproxy -f /usr/local/etc/haproxy/haproxy.cfg"]
+      [sh, -c, "cat /etc/letsencrypt/live/owaf.io/fullchain.pem /etc/letsencrypt/live/owaf.io/privkey.pem | tee /etc/letsencrypt/live/owaf.io/owaf.io.pem && mkdir -p /usr/local/etc/haproxy/ && touch /usr/local/etc/haproxy/haproxy.cfg && echo $$HAPROXY_CONFIG > /usr/local/etc/haproxy/haproxy.cfg && cat /usr/local/etc/haproxy/haproxy.cfg && haproxy -f /usr/local/etc/haproxy/haproxy.cfg"]
 ```
 
 如果文件不存在, 可以使用 `mkdir -p ~/unexist/yes/ && touch ~/unexist/yes/lol.txt && echo "hello" > ~/unexist/yes/lol.txt` 命令, 先创建文件.
