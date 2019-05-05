@@ -593,6 +593,43 @@ services:
 
 如果文件不存在, 可以使用 `mkdir -p ~/unexist/yes/ && touch ~/unexist/yes/lol.txt && echo "hello" > ~/unexist/yes/lol.txt` 命令, 先创建文件.
 
+## 自动更新证书
+
+更新的流程如下:
+
+1. 获得新的证书
+2. 使用新证书制作 HAProxy 可以使用的格式的证书
+3. 默认情况下, LetsEncrypt 创建了一个 CRON 任务在 `/etc/cron.d/certbot` 里. 这个任务一天跑两次(默认情况下, LetsEncrypt 只会在离过期 30 天以内更新证书.)
+
+我们要做的是写一个每月运行一次的bash脚本, 并且每次强制更新证书.
+
+我们将 CRON 任务修改成:
+
+```
+0 0 1 * * root bash /opt/update-certs.sh
+```
+
+这个任务会在每月的第一天的 0 点 0 分执行.
+
+任务里执行的 bash 脚本(/opt/update-certs.sh) 是这样的:
+
+```bash
+#!/usr/bin/env bash
+
+# Renew the certificate
+certbot renew --force-renewal --tls-sni-01-port=8888
+
+# Concatenate new cert files, with less output (avoiding the use tee and its output to stdout)
+bash -c "cat /etc/letsencrypt/live/demo.scalinglaravel.com/fullchain.pem /etc/letsencrypt/live/demo.scalinglaravel.com/privkey.pem > /etc/ssl/demo.scalinglaravel.com/demo.scalinglaravel.com.pem"
+
+# Reload  HAProxy
+service haproxy reload
+```
+
+这和我们之前步骤唯一的区别是使用了 `--force-renewal` 来让 LetsEncrypt 每月更新一次证书. 这种方式比一天跑两次更容易理解, 也更不容易出错.
+
+
+
 ## Useful Commands
 
 Here is a small list of useful commands when dealing with Docker:
