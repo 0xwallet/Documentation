@@ -525,58 +525,56 @@ HAProxy 的配置流程包含主要 3 种参数来源:
 `/etc/haproxy/haproxy.cfg`
 
 ```
-global
-
-        # Default SSL material locations
-        ca-base /etc/letsencrypt/live/owaf.io/
-        crt-base /etc/letsencrypt/live/owaf.io/
-
-frontend localnodes
+frontend fe-owaf
     bind *:80
-    mode http
-    default_backend nodes
 
-backend nodes
-    mode http
-    balance roundrobin
-    option forwardfor
-    http-request set-header X-Forwarded-Port %[dst_port]
-    http-request add-header X-Forwarded-Proto https if { ssl_fc }
-    option httpchk HEAD / HTTP/1.1\r\nHost:localhost
-    server web01 161.117.83.227:4000 check
+    # This is our new config that listens on port 443 for SSL connections
+    bind *:443 ssl crt /etc/letsencrypt/live/owaf.io/fullchain.pem
 
-listen stats *:1936
-    stats enable
-    stats uri /
-    stats hide-version
-    stats auth someuser:password
+    default_backend be-owaf
+
+# Normal (default) Backend
+# for web app servers
+backend be-owaf
+    # Config omitted here
+    server owaf 161.117.83.227:80
 ```
+
 
 ## 如何使用环境变量写入配置文件
 
 例子:
 
 ```yaml
-version: "3.7"
+version: "2"
 
 services:
   nginx:
-    image: nginx:alpine
+    image: library/haproxy:1.8.20
     ports:
       - 80:80
+      - 443:443
     environment:
-      NGINX_CONFIG: |
-        server {
-          server_name "~^www\.(.*)$$" ;
-          return 301 $$scheme://$$1$$request_uri ;
-        }
-        server {
-          server_name example.com
-          ...
-        }
+      HAPROXY_CONFIG: |
+        frontend fe-owaf
+            bind *:80
+
+            # This is our new config that listens on port 443 for SSL connections
+            bind *:443 ssl crt /etc/letsencrypt/live/owaf.io/fullchain.pem
+
+            default_backend be-owaf
+
+        # Normal (default) Backend
+        # for web app servers
+        backend be-owaf
+            # Config omitted here
+            server owaf 161.117.83.227:80
+
     command:
-      /bin/sh -c "echo $$NGINX_CONFIG > /etc/nginx/conf.d/redir.conf; nginx -g \"daemon off;\""
+      mkdir -p /usr/local/etc/haproxy/ && touch /usr/local/etc/haproxy/haproxy.cfg && echo $$HAPROXY_CONFIG > /usr/local/etc/haproxy/haproxy.cfg && haproxy -f /usr/local/etc/haproxy/haproxy.cfg
 ```
+
+如果文件不存在, 可以使用 `mkdir -p ~/unexist/yes/ && touch ~/unexist/yes/lol.txt && echo "hello" > ~/unexist/yes/lol.txt` 命令, 先创建文件.
 
 ## Useful Commands
 
