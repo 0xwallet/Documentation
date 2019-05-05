@@ -526,38 +526,10 @@ HAProxy 的配置流程包含主要 3 种参数来源:
 
 ```
 global
-        log /dev/log    local0
-        log /dev/log    local1 notice
-        chroot /var/lib/haproxy
-        stats socket /run/haproxy/admin.sock mode 660 level admin
-        stats timeout 30s
-        user haproxy
-        group haproxy
-        daemon
 
         # Default SSL material locations
-        ca-base /etc/ssl/certs
-        crt-base /etc/ssl/private
-
-        # Default ciphers to use on SSL-enabled listening sockets.
-        # For more information, see ciphers(1SSL).
-        ssl-default-bind-ciphers kEECDH+aRSA+AES:kRSA+AES:+AES256:RC4-SHA:!kEDH:!LOW:!EXP:!MD5:!aNULL:!eNULL
-
-defaults
-        log     global
-        mode    http
-        option  httplog
-        option  dontlognull
-        timeout connect 5000
-        timeout client  50000
-        timeout server  50000
-        errorfile 400 /etc/haproxy/errors/400.http
-        errorfile 403 /etc/haproxy/errors/403.http
-        errorfile 408 /etc/haproxy/errors/408.http
-        errorfile 500 /etc/haproxy/errors/500.http
-        errorfile 502 /etc/haproxy/errors/502.http
-        errorfile 503 /etc/haproxy/errors/503.http
-        errorfile 504 /etc/haproxy/errors/504.http
+        ca-base /etc/letsencrypt/live/owaf.io/
+        crt-base /etc/letsencrypt/live/owaf.io/
 
 frontend localnodes
     bind *:80
@@ -571,15 +543,39 @@ backend nodes
     http-request set-header X-Forwarded-Port %[dst_port]
     http-request add-header X-Forwarded-Proto https if { ssl_fc }
     option httpchk HEAD / HTTP/1.1\r\nHost:localhost
-    server web01 127.0.0.1:9000 check
-    server web02 127.0.0.1:9001 check
-    server web03 127.0.0.1:9002 check
+    server web01 161.117.83.227:4000 check
 
 listen stats *:1936
     stats enable
     stats uri /
     stats hide-version
     stats auth someuser:password
+```
+
+## 如何使用环境变量写入配置文件
+
+例子:
+
+```yaml
+version: "3.7"
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - 80:80
+    environment:
+      NGINX_CONFIG: |
+        server {
+          server_name "~^www\.(.*)$$" ;
+          return 301 $$scheme://$$1$$request_uri ;
+        }
+        server {
+          server_name example.com
+          ...
+        }
+    command:
+      /bin/sh -c "echo $$NGINX_CONFIG > /etc/nginx/conf.d/redir.conf; nginx -g \"daemon off;\""
 ```
 
 ## Useful Commands
