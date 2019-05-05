@@ -557,6 +557,7 @@ services:
     volumes:
       - /docker-volumes/etc/letsencrypt:/etc/letsencrypt
     environment:
+      IFS: ""
       HAPROXY_CONFIG: |
         frontend fe-owaf
             bind *:80
@@ -572,7 +573,7 @@ services:
             # Config omitted here
             server owaf 161.117.83.227:80
     command:
-      [sh, -c, "mkdir -p /usr/local/etc/haproxy/ && touch /usr/local/etc/haproxy/haproxy.cfg && echo $$HAPROXY_CONFIG > /usr/local/etc/haproxy/haproxy.cfg && haproxy -f /usr/local/etc/haproxy/haproxy.cfg"]
+      [sh, -c, "mkdir -p /usr/local/etc/haproxy/ && touch /usr/local/etc/haproxy/haproxy.cfg && echo $$HAPROXY_CONFIG > /usr/local/etc/haproxy/haproxy.cfg && cat /usr/local/etc/haproxy/haproxy.cfg && haproxy -f /usr/local/etc/haproxy/haproxy.cfg"]
 ```
 
 如果文件不存在, 可以使用 `mkdir -p ~/unexist/yes/ && touch ~/unexist/yes/lol.txt && echo "hello" > ~/unexist/yes/lol.txt` 命令, 先创建文件.
@@ -617,6 +618,10 @@ elixir 预编译包的 checksum: https://elixir-lang.org/elixir.csv 对于第三
 - Daocloud 流水线在发布环节失败
 
 删除应用, 重新部署.
+
+- shell 中写入文件时换行符 `\n` 丢失
+
+将环境变量 IFS 设置为 "" (空的), 即可关闭自动剪裁.
 
 ## 集群与主机
 
