@@ -774,3 +774,11 @@ ssh 使用的是 publickey-authentication 机制, ssh-copy-id 可以让 publicke
 步骤可能需要提供密码, 或者其它的秘钥来登录.
 
 最后, 使用 `ssh -i ~/.ssh/mykey user@host` 就可以无密码登录远程服务器了.
+
+# asdf
+
+asdf 是一个管理各种应用程序版本的工具, 它有很多强大的插件和功能:
+
+- 从 master branch 安装最新的 elixir:
+
+`asdf install elixir ref:master`

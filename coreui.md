@@ -2,6 +2,34 @@
 
 coreui 是一个基于 Bootstrap 的 UI 库, 完全兼容 Bootstrap 的语法.
 
+## Grid 系统
+
+Bootstrap 的移动端优先的布局设计, 是基于一个 十二列的布局系统, 5 种默认的响应行为, Sass 变量以及 mixins, 还有大量的预定义的类.
+
+Bootstrap 的grid 系统使用了一系列的 containers, rows 和 columns 来对内容进行布局和对其. 它基于 flexbox 并且是完全响应式的. 下面是一个例子, 以及对 grid 的详细解析.
+
+```html
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+      One of three columns
+    </div>
+    <div class="col-sm">
+      One of three columns
+    </div>
+    <div class="col-sm">
+      One of three columns
+    </div>
+  </div>
+</div>
+```
+
+上面的例子创造了在任意大小的设备上等宽的三列. 这三列处于父元素`.container` 中, 并且在页面上居中.
+
+
+
+
+
 ## Modal
 
 Modal 是 Boostrap 中的一种控件, 也就是俗称的弹窗.  Modal 使用 HTML, CSS 和 JavaScript 制作而成. 它们处于页面中所有其它的元素之前, 并且取代了 <body> 的滚动条, 这样 modal 的内容就可以滚动.
@@ -123,3 +151,37 @@ Modal 里面还可添加 tooltips(标识符) 和 popovers(提示框). 当 modal 
   <p><a href="#" class="tooltip-test" title="Tooltip">This link</a> and <a href="#" class="tooltip-test" title="Tooltip">that link</a> have tooltips on hover.</p>
 </div>
 ```
+
+只需要在 `.modal-body` 里嵌套 `.container-fluid` 元素, 就可以像往常一样使用 grid 系统了:
+
+```html
+<div class="modal-body">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-4">.col-md-4</div>
+      <div class="col-md-4 ml-auto">.col-md-4 .ml-auto</div>
+    </div>
+    <div class="row">
+      <div class="col-md-3 ml-auto">.col-md-3 .ml-auto</div>
+      <div class="col-md-2 ml-auto">.col-md-2 .ml-auto</div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 ml-auto">.col-md-6 .ml-auto</div>
+    </div>
+    <div class="row">
+      <div class="col-sm-9">
+        Level 1: .col-sm-9
+        <div class="row">
+          <div class="col-8 col-sm-6">
+            Level 2: .col-8 .col-sm-6
+          </div>
+          <div class="col-4 col-sm-6">
+            Level 2: .col-4 .col-sm-6
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
