@@ -12,7 +12,19 @@ planaria 是 unwriter 编写的一个与 bsv 区块链进行交互的工具.
 
 它还附带了一个名为 Planaria Computer 的命令行界面工具，能让你通过几个命令来启动和生成这些后端，这使得使用起来更加容易。
 
+## 使用
+
+可以通过 `pc` planaria computer, 一个命令行的远程工具, 来连接到远程的 planaria 节点.
+
+1. 安装 pc:  `npm install -g planaria`
+2. 生成新用户(秘钥对): `pc new user`
+3. 连接到远程 planaria 节点
+
 ## 部署
+
+运行 planaria 节点需要至少 2GB 内存和 200GB 硬盘.
+
+首先, 需要运行 BitcoinSV 节点.
 
 https://github.com/interplanaria 上提供了 planaria 的 dockerfile, 使用 docker 可以轻松部署 planaria 到我们的主机上.
 
