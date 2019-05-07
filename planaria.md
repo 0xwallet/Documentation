@@ -126,13 +126,19 @@ services:
         limitancestorsize=100000
         limitdescendantsize=100000
     command:
-      [sh, -c, "touch /home/bitcoin.conf && echo $$BITCOIN_CONF > /home/bitcoin.conf && bitcoind -conf=/home/bitcoin.conf"]
+      [sh, -c, "echo $$BITCOIN_CONF > /Bitcoin/bitcoin.conf && bitcoind -conf=/Bitcoin/bitcoin.conf"]
     ports:
     - 8333:8333
     - 8332:8332
     volumes:
     - /docker-volume/Bitcoin:/Bitcoin
 ```
+
+
+#### Trouble Shooting
+
+- 尽管硬盘空间充足, 依旧提示 `Error: Error: Disk space is low!`, 并且自动退出.
+
 
 
 
