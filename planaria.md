@@ -76,6 +76,65 @@ limitdescendantsize=100000
 1. 在 DaoCloud 上创建新项目, 命名为 bitcoinsv, github 仓库地址填写上面的地址, 手动触发构建任务.
 2. 构建成功后, 我们就获得了 image: `daocloud.io/quantum_leap/bitcoinsv` .
 
+在 DaoCloud 的stack界面, 新建 bitcoinsv stack, yaml 文件可以这样写:
+
+```yaml
+version: "2"
+services:
+  bitcoinsv:
+    image: daocloud.io/quantum_leap/bitcoinsv:master
+    environment:
+      IFS: ""
+      BITCOIN_CONF: |
+        # location to store blockchain and other data.
+        datadir=/Bitcoin
+        dbcache=4000
+        # Must set txindex=1 so Bitcoin keeps the full index
+        txindex=1
+
+        # [rpc]
+        # Accept command line and JSON-RPC commands.
+        server=1
+        # Default Username and Password for JSON-RPC connections
+        # Planaria uses these values by default, but if you can change the settings
+        # When you run 'pc start'
+        rpcuser=root
+        rpcpassword=bitcoin
+
+        # If you want to allow remote JSON-RPC access
+        rpcallowip=0.0.0.0/0
+        # [wallet]
+        disablewallet=1
+
+        # [ZeroMQ]
+        # ZeroMQ messages power the realtime Planaria crawler
+        # so it's important to set the endpoint
+        zmqpubhashtx=tcp://0.0.0.0:28332
+        zmqpubhashblock=tcp://0.0.0.0:28332
+
+        # Planaria makes heavy use of JSON-RPC so it's set to a higher number
+        # But you can tweak this number as you want
+        rpcworkqueue=512
+
+        # Support large mempool
+        maxmempool=6000
+
+        # Support large pushdata
+        datacarriersize=100000
+
+        # Long mempool chain support
+        limitancestorsize=100000
+        limitdescendantsize=100000
+    command:
+      [sh, -c, "touch /home/bitcoin.conf && echo $$BITCOIN_CONF > /home/bitcoin.conf && bitcoind -conf=/home/bitcoin.conf"]
+    ports:
+    - 8333:8333
+    - 8332:8332
+    volumes:
+    - /docker-volume/Bitcoin:/Bitcoin
+```
+
+
 
 ### planaria
 
