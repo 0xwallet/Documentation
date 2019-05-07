@@ -12,7 +12,7 @@ planaria 是 unwriter 编写的一个与 bsv 区块链进行交互的工具.
 
 它还附带了一个名为 Planaria Computer 的命令行界面工具，能让你通过几个命令来启动和生成这些后端，这使得使用起来更加容易。
 
-## 使用
+## 使用 pc
 
 可以通过 `pc` planaria computer, 一个命令行的远程工具, 来连接到远程的 planaria 节点.
 
@@ -24,7 +24,60 @@ planaria 是 unwriter 编写的一个与 bsv 区块链进行交互的工具.
 
 运行 planaria 节点需要至少 2GB 内存和 200GB 硬盘.
 
-首先, 需要运行 BitcoinSV 节点.
+
+### BitcoinSV 节点
+
+首先, 需要运行 BitcoinSV 节点. 而且需要对 `bitcoin.conf` 做如下配置:
+
+```
+# 存放区块数据的路径
+datadir=/Bitcoin
+# 设置数据库缓存的大小(MB)
+dbcache=4000
+# 必须是 txindex=1 ,这样 Bitcoind 才会保存所有的索引
+txindex=1
+
+# [rpc]
+# 接受命令行和 JSON-RPC 的请求
+server=1
+# 默认的 JSON-RPC 的用户名和密码
+# Planaria 使用以下默认设置
+# 可以在执行 'pc start' 时修改
+rpcuser=root
+rpcpassword=bitcoin
+
+# 是否允许远程 rpc 请求
+rpcallowip=0.0.0.0/0
+# [wallet] 关闭 wallet 功能
+disablewallet=1
+
+# [ZeroMQ]
+# ZeroMQ 支持了 planaria 的数据实时抓取功能
+# 所以这里的设置很重要
+zmqpubhashtx=tcp://[YOUR SERVER IP]:28332
+zmqpubhashblock=tcp://[YOUR SERVER IP]:28332
+
+# rpc 请求队列的长度
+rpcworkqueue=512
+
+# Support large mempool
+maxmempool=6000
+
+# Support large pushdata
+datacarriersize=100000
+
+# Long mempool chain support
+limitancestorsize=100000
+limitdescendantsize=100000
+```
+
+使用 https://github.com/kevinejohn/docker-bitcoinsv 提供的 dockerfile 即可快速部署 bitcoinsv 的节点.
+
+1. 在 DaoCloud 上创建新项目, 命名为 bitcoinsv, github 仓库地址填写上面的地址, 手动触发构建任务.
+2. 构建成功后, 我们就获得了 image: `daocloud.io/quantum_leap/bitcoinsv` .
+
+
+### planaria
 
 https://github.com/interplanaria 上提供了 planaria 的 dockerfile, 使用 docker 可以轻松部署 planaria 到我们的主机上.
 
@@ -66,7 +119,7 @@ ENTRYPOINT ["/planaria/entrypoint.sh"]
 部署流程如下:
 
 1. 在 DaoCloud 上创建新项目, 命名为 planaria, github 仓库地址填写 https://github.com/interplanaria/planaria.git, 手动触发构建任务.
-2. 构建成功后, 切换到"应用"界面, 选择planaria 右边的 "部署最新版本"
+2. 构建成功后, 我们就获得了 image: `daocloud.io/quantum_leap/planaria` . 切换到"应用"界面, 选择planaria 右边的 "部署最新版本"
 3. 部署成功后, 需要设置启动命令.
 
 查看 planaria 内置的 entrypoint 脚本:
