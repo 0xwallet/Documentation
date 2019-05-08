@@ -284,6 +284,102 @@ module.exports = {
 }
 ```
 
+我们还想访问文件和LMDB实例，因为我们想要 planarium.js 提供API端点。所以我们也在 planarium.js 里面初始化它们：
+
+```js
+module.exports = {
+  query：{
+    api：{
+      oncreate：async function（m）{
+        dbpath = m.fs.path +“/ lmdb”
+        await mkdir（dbpath）
+        filepath = m.fs.path +“/ c /”
+        env .open（{path：dbpath，mapSize：2 * 1024 * 1024 * 1024，maxDbs：3}）;
+        db = env.openDbi（{name：“mediatype”，create：true}）
+      }，
+```
+
+> 请记住，oncreate 每次 Planarium 启动时都会被执行，因为Planarium 只是一个无状态的HTTP / SSE服务器，它从实际的状态机即 Planaria 中消耗。
+> 另一方面，Planaria oncreate 仅在其生命周期内执行，这是第一次创建 Planaria 状态机。
+
+2. 将文件写入自定义路径
+
+您可能已经注意到上面代码中使用的变量 `m.fs.path`。此环境变量包含 Planaria 文件系统的根路径，由 Planaria 和 Planarium 容器共享。
+
+在内部，Planaria 创建一个如下所示的文件夹结构：
+
+```
+/ fs
+  / [Planaria Machine1的地址]
+  / [Planaria Machine2的地址]
+  / [Planaria Machine3的地址]
+```
+
+请注意，此示例是一个大量用例的示例，在许多情况下，您只运行一台计算机，并且只有一个文件夹 /fs。
+
+但实际上，每个 Planaria 机器都有自己的沙盒文件系统。这很重要，因为 Planaria 节点可以同时运行多台计算机，并且每台计算机上的文件不应该溢出到另一个文件系统。
+
+也就是说，您无需深入了解这一点就可以使用API​​。所有你需要记住的是，在onmempool，onblock，oncreate，onrestart回调中引用计算机的文件系统的根文件夹时。您只需要使用变量 `m.fs.path`。
+
+例如，如果要创建名为 /c 的文件夹，则只需执行以下操作：
+
+```
+mkdir(m.fs.path + "/c")
+```
+
+另一个重要的事情：文件系统在 Planaria 和 Planarium 容器之间共享。所以你可以从 Planaria 写出状态，并利用 Planarium 中的状态。
+
+以下是此 `m.fs.path` 变量的更具体的示例用法：
+
+```js
+module.exports = {
+  onmempool: function(m) {
+    // create a folder named /c/[hash] under the root file system
+    fs.writeFile(m.fs.path + "/c/" + hash, buf, function(er) {
+      ...
+    })
+    ...
+  }
+}
+```
+
+3. LMDB (Lightning Memory-Mapped Database)
+
+为使文件服务器正常工作，我们需要为每个服务文件设置内容类型标头。否则，浏览器可能无法理解如何渲染，只是将文件下载到文件系统而不是在浏览器中显示它们。
+
+但是在文件加载时提取此元数据可能效率低下。所以在这里我们将尝试在爬网时存储内容类型，缓存一次，然后将其用于每个文件加载。
+
+一种方法是查询已存储此元数据的内置 MongoDB 实例。但是我们会在这里尝试不同的东西，因为我们不希望每次请求文件时都会向核心数据库发送消息。
+
+让我们使用基于文件的辅助数据库。在这种情况下，我们使用LMDB（Lightning Memory-Mapped Database）。LMDB是一个针对读取操作进行了优化的快速 键/值 数据库，由于其基于事务的特性而非常可靠，并且允许来自多个进程的并发访问，这非常适合我们在这里尝试实现的目标 - 存储 {hash：内容类型} 键/值对。
+
+我们在 `m.fs.path + "/lmdb"` 文件夹下创建数据库, 用planaria.js打开数据库, 然后使用数据库连接 hash:type 为每个onmempool 事件“放置” 键值对。
+
+```js
+const lmdb = require('node-lmdb')
+var en = new lmdb.Env()
+var dbi
+module.exports = {
+  ...
+  oncreate: async function(m) {
+    ...
+    await mkdir(m.fs.path + "/lmdb")
+    en.open({
+      path: m.fs.path + "/lmdb",
+      mapSize: 2*1024*1024*1024,
+      maxDbs: 3
+    });
+    db = en.openDbi({ name: "mediatype", create: true })
+  },
+  onmempool: async function(m) {
+    let txn = en.beginTxn()
+    txn.putString(db, hash, type)
+    txn.commit();
+  }
+}
+```
+
+一旦我们创建了这些条目，我们就可以从 planarium.js 中访问它们并提供所有这些条目。我们只需要添加一个新的自定义API端点，我将在下一节中介绍。
 
 # 使用 pc
 
