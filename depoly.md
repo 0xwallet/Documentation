@@ -675,6 +675,10 @@ elixir 预编译包的 checksum: https://elixir-lang.org/elixir.csv 对于第三
 
 将环境变量 IFS 设置为 "" (空的), 即可关闭自动剪裁.
 
+- 部署 dev 环境的 dashboard, 显示数据库已创建, 但打开 /auth 页面后, 输入邮箱点击 Enter, 不能进入下一步.
+
+由于4000 端口未开启, 所以访问到的并非 dev 环境.
+
 ## 集群与主机
 
 集群，是 DaoCloud 平台上资源的结合。集群为用户提供了统一管理计算资源的一种方式。
