@@ -224,6 +224,67 @@ HTTPS：//files.bitdb.network/1KuUr2pSJDao97XM8Jsq8zwLS6W1WtFfLg/c / ....
 
 它们与另一个端点完全相同，因为它们是由相同的代码构成的。
 
+## 3.初始化程序
+
+利用Planaria可以做的所有这些新事物，您将立即意识到需要一些方法来初始化您将在整个机器生命周期中使用的各种模块。例如，您可能想要：
+
+- 首次设置Planaria计算机时，初始化一次基于文件的数据库。
+- 创建将在整个机器生命周期的其余部分使用的空文件夹。
+- 初始化将在整个机器生命周期中使用的某些库。
+- 将现有的AI模型导入一次作为“起源”心智模型。
+
+为此，Planaria添加了一个名为的新事件处理程序oncreate。oncreate初始化机器时，该事件将被完全触发一次。
+
+当然，由于有两个容器，我们有两个oncreate初始化器：
+
+- planaria.js：位于oncreate。Planaria容器用于写入状态，因此当机器第一次运行时，它会被执行一次。
+- planarium.js：位于query.api.oncreate。Planarium略有不同。Planarium容器仅供阅读，无写入功能。因此，每次创建容器时，Planarium 都会被执行。
+
+这是一个planarium.js 示例设置（query.api.oncreate）
+
+![](./planarium-oncreate.png)
+
+![](./planaria-oncreate.png)
+
+## 实际例子
+
+让我们看看所有这些功能如何通过一个真实世界的例子汇集在一起​​：`C://`，一个基于比特币的内容可寻址文件系统。
+
+`C://` 通过SHA256生成文件名, 给比特币上传的内容，并将内容哈希下的文件内容以该文件名存储。这意味着每个唯一内容只有一个通用文件名，它引入了有趣的属性，使我们可以将这些文件用作确定性应用程序的构建块。
+
+在我们进入之前，您可以找到运行的整个代码和公共节点：
+
+https://planaria.network/@1KuUr2pSJDao97XM8Jsq8zwLS6W1WtFfLg
+
+1.初始化器
+
+对于这台机器，我们使用新引入的事件处理程序oncreate。
+
+对于Planaria，当机器首次启动时，它会被执行一次。它仅在第一次运行机器时运行，之后onrestart在节点重新启动时调用。
+
+因为我们只希望在开始执行 mkdir 一次，这属于 planaria.js 内部oncreate的。
+
+```js
+module.exports = {
+  ...
+  oncreate: async function(m) {
+    // create C:// folder
+    await mkdir(m.fs.path + "/c")
+    // create LMDB folder
+    await mkdir(m.fs.path + "/lmdb")
+    // Initialize LMDB
+    en.open({
+      path: fspath + "/lmdb",
+      mapSize: 2*1024*1024*1024,
+      maxDbs: 3
+    });
+    db = en.openDbi({ name: "mediatype", create: true })
+  },
+  ...
+}
+```
+
+
 # 使用 pc
 
 可以通过 `pc` planaria computer, 一个命令行的远程工具, 来连接到远程的 planaria 节点.
