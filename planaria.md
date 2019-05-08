@@ -381,6 +381,98 @@ module.exports = {
 
 一旦我们创建了这些条目，我们就可以从 planarium.js 中访问它们并提供所有这些条目。我们只需要添加一个新的自定义API端点，我将在下一节中介绍。
 
+4.自定义路由
+
+您可以在 planarium.js 内部定义自己的自定义外部HTTP路由 `query.api.routes`。
+
+请记住，只有比特币可以写入 Planaria。Planaria 没有“POST”或“PUT”或“DELETE”请求。所有对Planaria的写入都是通过比特币完成的，所以如果你想写，你就进行比特币交易。
+
+因此，routes 接口仅接受 GET请求，它直接绑定到 express.js 的get处理程序（Planarium API由express.js提供支持）
+
+```js
+const level = require('level')
+const db = level('mediatype')
+...
+module.exports = {
+  query: {
+    api: {
+      routes: {
+        "/c/:id": function(req, res) {
+          // 1. Generate filename
+          let filename = filepath + req.params.id;
+          // 2. Get the content-type info for the hash from LMDB
+          let txn = en.beginTxn()
+          let value = txn.getString(db, req.params.id)
+          txn.commit()
+          if (value) { res.setHeader('Content-type', value) }
+          let filestream = fs.createReadStream(filename)
+          filestream.on("error", function(e) {
+            res.send("")
+          })
+          filestream.pipe(res)
+        },
+      ...
+}
+```
+
+注意我们如何访问我们之前写的相同的LMDB实例（从 planaria.js）。
+
+两个容器（planaria和planarium）共享相同的文件系统，因此您可以进行写入和读取。这里我们用 planaria.js 访问我们之前存储的键/值对，之后我们在提供文件之前将值设置为内容类型。
+
+可在这里进一步了解它的工作原理：
+
+https://planaria.network/@1KuUr2pSJDao97XM8Jsq8zwLS6W1WtFfLg
+
+您也可以使用公共节点中的API：
+
+https://data.bitdb.network/
+
+## 这意味着什么?
+
+一切都是文件。
+
+如果你考虑一下，一切都在一个文件上运行。并且所有应用程序都只是文件，它们使用其他文件。
+
+但想一想。一切都是一个文件。
+
+一切都是比特币。
+
+一旦你以这种方式看到它，你就会发现Planaria可以用来构建各种完全成熟的比特币驱动的计算后端。
+
+下面我列出了一些有趣的技术，这些技术都建立在文件上，只是为了帮助想象。
+
+- 普通文件数据库：您现在可以访问基于文件的数据库，例如LMDB。
+- 密钥：由于默认的隐私模式，您甚至可以存储比特币密钥对，RSA密钥对，第三方API密钥或您希望存储在后端的任何密钥系统，而不会将其暴露给公众。这可用于签名/验证或加密/解密传入数据，或与第三方API交互。
+- 比特币交易：您甚至可以存储未签名的比特币交易模板，并在您的计算和API中使用它们。停在这里，稍微谈谈这一点。
+- 版本控制： Git是一个基于文件的版本控制系统。现在，您可以在Planaria上存储和更新git（或类似系统）。
+- 人工智能培训模型：您可以在Planaria节点上存储机器学习模型，并通过比特币交易对其进行培训。这可以从导入的训练模型开始，也可以从头开始。
+- 3D打印模型文件：在Planaria上存储和更新3d打印模型。在某些时候，您甚至可以通过制作另一个上传最新文件的事务来“提交”更改。
+- 代码：您甚至可以创建一个状态机，它不仅可以更新自己的状态，还可以更新状态转换逻辑本身，实现由比特币交易驱动的“可升级”状态机。
+
+顺便问一下，您是否注意到我刚才解释的所有方面的每个方面都是赚钱的机会？
+
+您可以运行由比特币驱动的强大的确定性透明服务并赚钱。今天。人们将支付服务来运行程序。如果任何服务提供商试图作弊，比特币将充当不可改变的见证，这为这些操作提供了“信任”。
+
+这就是比特币的能力。这就是Planaria的作用。
+
+最重要的是，Planaria不是一些科幻小说或骗局白皮书，销售永远不会到来的未来。你可以在这里使用公共节点：
+
+https://planaria.network/
+
+甚至可以自己运行并提供自己的公共节点作为服务。
+
+Planaria今天在这里。
+
+今天所有在本文中解释的内容都是可能的。
+
+今天比特币可以做到这一切。
+
+我们去构建吧。
+
+加入我们。
+
+https://bitdb.network/atlantis
+
 # 使用 pc
 
 可以通过 `pc` planaria computer, 一个命令行的远程工具, 来连接到远程的 planaria 节点.
