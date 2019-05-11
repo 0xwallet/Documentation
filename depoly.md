@@ -657,28 +657,6 @@ Here is a small list of useful commands when dealing with Docker:
 
 elixir 预编译包的 checksum: https://elixir-lang.org/elixir.csv 对于第三方提供的软件包, 都应该检查其 checksum, 确保安全.
 
-## Trouble Shooting
-
-- elixir 报错无法启动 apps.
-
-可能是由于在 dockerfile 中设置了非 root 用户, 导致权限不够, 无法写入某些文件. 在 Dockerfile 里设置 `User root` 即可.
-
-- 连接不上数据库.
-
-可能是数据库的 hostname, password 或者 port 配置错误.
-
-- Daocloud 流水线在发布环节失败
-
-删除应用, 重新部署.
-
-- shell 中写入文件时换行符 `\n` 丢失
-
-将环境变量 IFS 设置为 "" (空的), 即可关闭自动剪裁.
-
-- 部署 dev 环境的 dashboard, 显示数据库已创建, 但打开 /auth 页面后, 输入邮箱点击 Enter, 不能进入下一步.
-
-由于4000 端口未开启, 所以访问到的并非 dev 环境.
-
 ## 集群与主机
 
 集群，是 DaoCloud 平台上资源的结合。集群为用户提供了统一管理计算资源的一种方式。
