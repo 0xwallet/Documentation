@@ -1,51 +1,13 @@
-* Heading 
-** Add Heading at Current Level:  
-   Ctrl-Enter
-** Change level of Heading: 
-   Alt-Left/Right
-** Change Type of Heading: 
-   Shift-Left/Right
-* Command  
-** Open menu: SPC m
-* Lists
-** Start a list :
-+ List [%]
-** Add List at Current Level:
-   Alt-Shift-Enter (will add checkbox automatically)
-+ List [%]
-+ [ ] List2
-+ [ ] List3
-+ [ ] List4
+8点开始工作, [2019-05-10] 要做的有:
+
+#+TITLE: Frontend
+* WAIT 使用 CoreUI-React, 对服务器 API 的调用进行测试
+* TODO 登陆页面 UI
+
+#+TITLE: backend
+* DONE api: get_auth_code
+* TODO api: login
+* TODO api: set_profile
 
 
-** Change level of List :
-  Alt-Left/Right
-+ List [0%]
-  + [ ] List2
-+ [ ] List3
-  + [ ] List4
- 
-** Toggle Check box state:
-   Ctrl-c-c
-
-+ List [66%]
-  + [ ] List1
-  + [X] List2
-  + [X] List3
-+ [X] List3
-  + [X] List1
-  + [X] List2
-  + [X] List3
- 
-** Change list type: 
-   Shift-Left/Right
-
-1. List [66%]
-   + [ ] List1
-   + [X] List2
-   + [X] List3
-2. [X] List3
-   + [X] List1
-   + [X] List2
-   + [X] List3
-
+8点到12点, 下午2点到7点, 晚上10点之前, 随时可以微信联系, 或 github 上互动
