@@ -90,3 +90,23 @@ const GET_DOG = gql`
   }
 `;
 ```
+
+这里是我们的 cache redirect, 我们可以很容易的指定一个 map 在 apollo-boost client 的 `cacheRedirects` 属性里. cache redirect 会返回一个 key, 然后 query 就可以使用它来从缓存里找到数据.
+
+```js
+import ApolloClient from 'apollo-boost';
+
+const client = new ApolloClient({
+  cacheRedirects: {
+    Query: {
+      dog: (_, { id }, { getCacheKey }) => getCacheKey({ id, __typename: 'Dog' })
+    }
+  }
+})
+```
+
+# 结合本地和远程的数据
+
+数以千计的开发者告诉我们, Apollo Client 在管理远程数据方面非常优秀, 满足了大约 80% 的数据需求. 但是剩下的 20% 本地数据怎么办? 例如全局 flags 和设备 API 的返回值. 这就是为什么我们有了 apollo-link-state, 它能让你将 Apollo cache 最为唯一的真实数据来源.
+
+在 Apollo Client 中管理你全部的数据, 让你能够在你所有的数据接口中利用 GraphQL 的优点. 同时让你能够从 Apollo DevTools 的 GraphiQL 中观察你本地和远程的 schemas.
