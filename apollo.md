@@ -39,3 +39,39 @@ Apollo Client 会管理好请求的开始到结束, 包括载入进度和错误�
 当你切换到 Apollo Client 之后, 你会发现你可以删除很多关于数据管理的不必要的代码. 具体的数据取决于你的应用, 但有一些团队报告说是几千行的代码. 当你发现使用 Apollo 可以编写更少的代码时, 这不意味着你需要压缩新功能! 高级功能可以通过 Query 组件的 props 很容易地得到, 例如 优化 UI, 重试, 以及分页等.
 
 
+# 零配置缓存
+
+Apollo Client 和其它的数据管理解决方案最关键的不同是它的通用缓存. 启动 Apollo Client, 你就获得了一个不需要额外配置的智能缓存. 在 Pupstagram 示例应用的主页, 点击其中一个 dog 来查看详细页面. 然后返回主页. 你会注意到主页的图片立刻就载入好了, 多亏了 Apollo 缓存.
+
+```js
+import ApolloClient from 'apollo-boost';
+
+// the Apollo cache is set up automatically
+const client = new ApolloClient();
+```
+
+缓存不是简单的工作, 但我们已经花了两年时间专注于解决它. 由于你可以从多个路径访问同样的数据, 通用化是保证你的数据在多个组件间的一致性的关键. 让我们来看看实际例子:
+
+```js
+const GET_ALL_DOGS = gql`
+  query {
+    dogs {
+      id
+      breed
+      displayImage
+    }
+  }
+`;
+
+const UPDATE_DISPLAY_IMAGE = gql`
+  mutation UpdateDisplayImage($id: String!, $displayImage: String!) {
+    updateDisplayImage(id: $id, displayImage: $displayImage) {
+      id
+      displayImage
+    }
+  }
+`;
+```
+
+查询语句 `GET_ALL_DOGS` 获取到了一系列的 dogs 和它们的显示图片. 修改语句 `UPDATE_DISPLAY_IMAGE` 更新了一个 dog 的显示图片. 如果我们更新一个特定的 dog 的显示图片, 我们就需要dogs列表能够表现出这个更新. Apollo Client 将 GraphQL 结果的每个 object 分割成一个带有 __typename 和 id 属性的对象, 放在 Apollo 缓存里. 这就保证了从 mutation 返回的值, 会根据其带有的 id 自动地更新任何查询语句中带有相同 id 的对象. 这也保证了两个返回相同数据的查询语句总是同步的.
+
