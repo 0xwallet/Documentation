@@ -75,3 +75,18 @@ const UPDATE_DISPLAY_IMAGE = gql`
 
 查询语句 `GET_ALL_DOGS` 获取到了一系列的 dogs 和它们的显示图片. 修改语句 `UPDATE_DISPLAY_IMAGE` 更新了一个 dog 的显示图片. 如果我们更新一个特定的 dog 的显示图片, 我们就需要dogs列表能够表现出这个更新. Apollo Client 将 GraphQL 结果的每个 object 分割成一个带有 __typename 和 id 属性的对象, 放在 Apollo 缓存里. 这就保证了从 mutation 返回的值, 会根据其带有的 id 自动地更新任何查询语句中带有相同 id 的对象. 这也保证了两个返回相同数据的查询语句总是同步的.
 
+通常很复杂的流程, 通过 Apollo cache 变得十分简单. 让我们回到之前的 `GET_ALL_DOGS` 查询语句里面. 对于特定的 dog 的详细页面, 我们想要传送什么信息过去? 由于我们已经获取到了每个 dog 的信息, 所以我们不想重新从服务器获取同样信息. 通过缓存重定向, Apollo cache 会帮我们连接两个 query 里面重复的部分, 这样就不需要反复获取信息.
+
+这里是我们的查询一个 dog 的 query:
+
+```js
+const GET_DOG = gql`
+  query {
+    dog(id: "abc") {
+      id
+      breed
+      displayImage
+    }
+  }
+`;
+```
