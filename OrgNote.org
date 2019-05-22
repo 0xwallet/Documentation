@@ -1,0 +1,13 @@
+8点开始工作, [2019-05-10] 要做的有:
+
+#+TITLE: Frontend
+* WAIT 使用 CoreUI-React, 对服务器 API 的调用进行测试
+* TODO 登陆页面 UI
+
+#+TITLE: backend
+* DONE api: get_auth_code
+* TODO api: login
+* TODO api: set_profile
+
+
+8点到12点, 下午2点到7点, 晚上10点之前, 随时可以微信联系, 或 github 上互动

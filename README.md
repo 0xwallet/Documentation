@@ -1,3 +1,14 @@
+- [Planaria 介绍](./planaria.md)
+- [Planaria 编写教程之 解读 genesis](./genesis.md)
+- [前端文档](./coreui.md)
+- [bitcoinsv-elixir文档](./bitcoinsv-elixir.md)
+- [部署(Depoly)文档](./depoly.md)
+- [phoenix框架文档](./phoenix.md)
+- [METANET 时代的 Web 应用架构](./metanet.md)
+- [Trouble Shooting](./trouble.md)
+- [时区(Timezone)信息的处理](./timezone.md)
+- [阿波罗客户端(React 适用的 GraphQL 客户端)](./apollo.md)
+
 # 比特币转账手续费(矿工费)计算方式
 
 比特币网络中是按照交易的体积来计算手续费的, 但是费率没有一个绝对的标准, 对于 bsv 来说, 一般是在
@@ -46,7 +57,7 @@
 **bitsv(python)**:
 
 ```py
-## 估算这笔交易的手续费, 参数有(input 个数, output 个数, 费率, input是否被压缩过, opreturn 的大小)
+## 估算这笔交易的手续费, 参数有(input 个数, output 个数, 费率, 公钥是否被压缩过, opreturn 的大小)
 def estimate_tx_fee(n_in, n_out, satoshis, compressed, op_return_size=0):
 
     # 费率未知, 返回 0
@@ -70,6 +81,9 @@ def estimate_tx_fee(n_in, n_out, satoshis, compressed, op_return_size=0):
 
     return estimated_fee
 ```
+
+代入之前那笔交易的数值 1 个 input, 2 个 outputs, 公钥是压缩过的, 无 opreturn, 我们得到的体积是 226, 和实际体积完全
+相等. 可见, 是费率设置过高了.
 
 # elixir 开发准备工作
 
@@ -185,3 +199,6 @@ mix deps.get
 iex -S mix phx.server
 ```
 
+# Depoly
+
+[部署指南](./depoly.md)

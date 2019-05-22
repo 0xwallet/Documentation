@@ -1,0 +1,43 @@
+* Org Mode
+
+VsCode 安装 vscode-org-mode/org-mode 插件, 即可实现对 Org Mode 的支持.
+
+** 标题
+
+* h1
+** h2
+*** h3
+
+** TODO Lists
+
+#+TITLE: If You Give a Mouse a Cookie
+* DONE Receive codekie
+* TODO Ask for a glass of milk
+
+*** 改变状态
+
+#+TITLE: If You Give a Mouse a Cookie
+* DONE Receive codekie
+* WAIT Ask for a glass of milk
+
+*** 插入时间戳
+
+#+TITLE: If You Give a Mouse a Cookie
+* DONE Receive codekie
+* TODO Ask for a glass of milk
+- Come back to this on [2019-10-10 Mon]
+
+
+** 文档格式
+
+选中文字后, 输入对应符号, 即可自动补全.
+
+*a*
+/b/
+_c_
+~d~
+
+snippets:
+
+title
+link
