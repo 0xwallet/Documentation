@@ -16,3 +16,20 @@ npm install apollo-boost react-apollo graphql
 - react-apollo: 将 Apollo 和 React 的 View 层结合
 - graphql: 处理 GraphQL 查询语句
 
+> 我们还可以使用 [CodeSandbox](https://codesandbox.io/) 来进行开发.
+
+# 创建一个客户端
+
+很好, 现在我们所需的所有依赖已经安装好了, 让我们来创建 Apollo Client. 唯一要做的就是启动你的 GraphQL 服务器. 一般是在你的应用的 host 下的 `/graphql` 路径.
+
+在 index.js 文件中 import ApolloClient 从 apollo-boost, 并在 client config 对象中添加 GraphQL server 的 uri 配置.
+
+```js
+import ApolloClient from "apollo-boost";
+
+const client = new ApolloClient({
+  uri: "https://48p1r2roz4.sse.codesandbox.io"
+});
+```
+
+这样就行了! 现在你的 client 已经准备好开始获取数据了. 在我们将 Apollo Client 连接到 React 之前, 先试着使用普通的 JavaScript 发送一个 Query. 在 index.js 文件中, 试着调用 `client.query()`. 记住先 import `gql` 函数将你的 query 字符串解析成 query document.
