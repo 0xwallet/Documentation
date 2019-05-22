@@ -132,3 +132,5 @@ const GET_DOG = gql`
 Apollo Client 很容易上手, 同时在你需要进行扩展的时候也很容易. 如果你需要的自定义功能不包含在 apollo-boost 中, 例如针对特定应用的中间件或者持久化缓存, 你可以通过 Apollo Link 来将你自己的 client 连接到 Apollo cache 并且加入你的网络栈.
 
 如果你的公司正在生产环境中使用 Apollo Client, 我们很乐意在我们的博客中添加你的案例! 请使用 Spectrum 联系我们, 这样我们就能了解你是如何使用 Apollo 的. 另外, 如果你已经有了一个关于此的博文或者大会演讲, 请发送 PR 给我们.
+
+[开始](./apollo/getting_start.md)
