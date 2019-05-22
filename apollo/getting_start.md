@@ -33,3 +33,28 @@ const client = new ApolloClient({
 ```
 
 这样就行了! 现在你的 client 已经准备好开始获取数据了. 在我们将 Apollo Client 连接到 React 之前, 先试着使用普通的 JavaScript 发送一个 Query. 在 index.js 文件中, 试着调用 `client.query()`. 记住先 import `gql` 函数将你的 query 字符串解析成 query document.
+
+```js
+import { gql } from "apollo-boost";
+// or you can use `import gql from 'graphql-tag';` instead
+
+...
+
+client
+  .query({
+    query: gql`
+      {
+        rates(currency: "USD") {
+          currency
+        }
+      }
+    `
+  })
+  .then(result => console.log(result));
+```
+
+打开控制台观察结果. 你会看到它包含了各种属性, 例如 rates, loading 以及 netwrokStatus. 当你不需要 React 或者其它的前端框架时, 我们的 view 层也可以让你更容易地绑定 query 和 UI, 并且反应式地更新你的组件数据.让我们学习如何将 Apollo Client 和 React 连接起来, 这样我们就可以开始用 react-apollo 构造查询组件了.
+
+# 将客户端连接到 React
+
+要将 Apollo Client 连接到 React, 你会需要使用 react-apollo 中的 ApolloProvider 组件. ApolloProvider 类似于 React 的 context provider. 它会包装你的 React 应用, 并且将客户端放在 context 中, 这让你可以从组件树的任意位置获取它.
