@@ -133,5 +133,21 @@ Apollo Boost 包含了一些我们认为是很基础的包.这里有:
 
 Apollo Boost 最棒的地方在于你不需要自己进行全部配置! 只要指定一些选项, 它会自动帮你做好其它的.
 
+## 配置选项
 
+这里有一些配置选项, 你可以传送给 apollo-boost 导出的 ApolloClient. 它们都是可选的.
 
+- `uri`: string
+一个用来表示你的 GraphQL 服务器 endpoint 的字符串. 默认是 `/graphql`
+
+- `fetchOptions`: Object
+任何你想要传送给 fetch 的设置(证书, headers 等等). 这些配置是静态的, 所以它们不会因为每个 request 而变化.
+
+- `request`: (operation: Operation) => Promise <void>
+这个函数在每次请求的时候都会被调用. 它接受一个 GraphQL 操作并返回一个 promise. 要动态设置 `fetchOptions`, 你可以使用 `operation.setContext({ headers })` 将它们添加到操作的上下文中. 任何在这里设置的配置会传送给 `fetchOptions`. 对于身份验证很有帮助.
+
+- `onError`: (errorObj: { graphQLErrors: GraphQLError[], networkError: Error, response?: ExecutionResult, operation: Operation }) => void
+我们包括一个默认的错误处理器, 会将你的错误发送到 console. 如果你想用别的机制处理错误, 那么设定这个函数.
+
+- `clientState`: { resolvers?: Object, defaults?: Object, typeDefs?: string | Array <string> }
+一个用来表示你的 `apollo-link-state` 配置的对象. 对于本地状态管理很有用.
