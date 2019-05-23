@@ -114,3 +114,24 @@ const ExchangeRates = () => (
   </Query>
 );
 ```
+
+恭喜, 你刚才构建了你的第一个 Query 组件! 如果你在你的 App 组件里面按照前面的例子渲染了 ExchangeRates 组件, 那么你会先看到一个载入提示然后是数据. Apollo Client 会自动缓存数据, 当数据从 server 发来的时候. 所以第二次运行相同 query 的时候你不会再看到 loading 提示.
+
+# Apollo Boost
+
+在我们的例子中, 我们使用 Apollo Boost 来快速配置 Apollo Client. 尽管 GraphQL 服务器是你开始时唯一需要做的配置, 这里还有很多其它功能的配置, 例如本地状态管理, 身份验证和错误处理.
+
+## 它包括哪些?
+
+Apollo Boost 包含了一些我们认为是很基础的包.这里有:
+
+- apollo-client
+- apollo-cache-inmemory
+- apollo-link-http
+- apollo-link-error
+- apollo-link-state
+
+Apollo Boost 最棒的地方在于你不需要自己进行全部配置! 只要指定一些选项, 它会自动帮你做好其它的.
+
+
+
