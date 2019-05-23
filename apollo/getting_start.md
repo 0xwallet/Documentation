@@ -77,3 +77,40 @@ const App = () => (
 
 render(<App />, document.getElementById("root"));
 ```
+
+# 请求数据
+
+一旦你的 ApolloProvider 放置好了, 你就可以使用 Query 组件来获取数据了! Query 是一个从 react-apollo 中导出的 React 组件, 它使用 render prop 模式来与你的 UI 共享 GraphQL 数据.
+
+首先, 将你包装在 gql 函数里的 GraphQL query 传递给 Query 组件的 query prop. 然后, 你要提供一个函数给 Query 组件的子 prop 来确定有什么是要渲染的, 这个 Query 会包含对象的载入, 错误和数据等属性. Apollo Client 会为你跟踪错误和载入情况, 这将会被反映在 loading 和 error 属性上. 一旦你的查询结果反悔了, 它将会被附加到 data 属性上.
+
+让我们在 `index.js` 文件中创建一个 `ExchangeRates` 组件, 来看看 Query 组件是如何运作的!
+
+```js
+import { Query } from "react-apollo";
+import { gql } from "apollo-boost";
+
+const ExchangeRates = () => (
+  <Query
+    query={gql`
+      {
+        rates(currency: "USD") {
+          currency
+          rate
+        }
+      }
+    `}
+  >
+    {({ loading, error, data }) => {
+      if (loading) return <p>Loading...</p>;
+      if (error) return <p>Error :(</p>;
+
+      return data.rates.map(({ currency, rate }) => (
+        <div key={currency}>
+          <p>{currency}: {rate}</p>
+        </div>
+      ));
+    }}
+  </Query>
+);
+```
