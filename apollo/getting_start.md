@@ -151,3 +151,13 @@ Apollo Boost 最棒的地方在于你不需要自己进行全部配置! 只要�
 
 - `clientState`: { resolvers?: Object, defaults?: Object, typeDefs?: string | Array <string> }
 一个用来表示你的 `apollo-link-state` 配置的对象. 对于本地状态管理很有用.
+
+- `cacheRedirects`: Object
+一个 map, 其中包含了许多函数, 会在 query 请求发生之前, 将其转移到 cache 中的其它地方. 如果你有一系列的 query, 然后想在详细页面使用之前的数据, 这个会很有用.
+
+- `credentials`: string
+默认是 `same-origin`. 用于判断是否 user agent 应该附加 cookies.
+
+- `headers`: Object
+一系列的 Header 的键值对.
+
