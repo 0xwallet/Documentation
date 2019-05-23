@@ -58,3 +58,22 @@ client
 # 将客户端连接到 React
 
 要将 Apollo Client 连接到 React, 你会需要使用 react-apollo 中的 ApolloProvider 组件. ApolloProvider 类似于 React 的 context provider. 它会包装你的 React 应用, 并且将客户端放在 context 中, 这让你可以从组件树的任意位置获取它.
+
+在 `index.js` 中, 用 `ApolloProvider` 把 React 应用包裹起来. 我们建议把 `ApolloProvider` 放在比较高的位置, 在你需要获取 GraphQL 数据的上方. 例如, 它可以放在的 root route 组件的外面, 如果你正在使用 React Router 的话.
+
+```js
+import React from "react";
+import { render } from "react-dom";
+
+import { ApolloProvider } from "react-apollo";
+
+const App = () => (
+  <ApolloProvider client={client}>
+    <div>
+      <h2>My first Apollo app 🚀</h2>
+    </div>
+  </ApolloProvider>
+);
+
+render(<App />, document.getElementById("root"));
+```
